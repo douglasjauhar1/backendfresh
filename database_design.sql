@@ -36,24 +36,26 @@ CREATE TABLE companies(
     logo VARCHAR(255),
     date_created DATE,
     date_updated DATE,
-    username_index VARCHAR(80),
+    created_by VARCHAR(80),
     PRIMARY KEY(id)
 );
 
 CREATE TABLE tokens(
-	id INT AUTO_INCREMENT,
-	token VARCHAR(255),
-	UNIQUE(token),
-	PRIMARY KEY(id)
+    id INT AUTO_INCREMENT,
+    token VARCHAR(255),
+    status INT,
+    UNIQUE(token),
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE projects(
     id INT AUTO_INCREMENT,
-	name VARCHAR(255),
-	description VARCHAR(255),
+    name VARCHAR(255),
+    skill VARCHAR(255),
+    description VARCHAR(255),
     id_engineer INT,
     id_company INT,
     done INT
-	PRIMARY KEY(id)
+    PRIMARY KEY(id)
 );
 
