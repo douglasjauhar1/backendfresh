@@ -22,7 +22,7 @@ const {
 } = require('../controllers/user')
 
 
-var directories = path.dirname('/home/hp/Batch13/MyHireBackEndV2/scr');
+var directories = path.dirname('./');
 
 const {
     tokenVerify
