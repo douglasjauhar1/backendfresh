@@ -159,7 +159,8 @@ module.exports = {
                 const temp = await appModel.saveStatusToken(token, 1)
                 
                 let send = {
-                    token: token
+                    token: token,
+                    category: result[0].category
                 }
                 response(res, 200, send)
             }   
@@ -309,7 +310,7 @@ module.exports = {
             }
             response(res, 200, regist)   
         }catch(error) {
-            response(res, 406, {message: 'the username was there'})
+            response(res, 500, error)
         }
     },
     searchEngineerby: async(req, res) => {
@@ -421,6 +422,7 @@ module.exports = {
                 name,
                 skill,
                 description,
+                price,
                 id_engineer,
                 done
             } = req.body;
@@ -429,6 +431,7 @@ module.exports = {
                 name,
                 skill,
                 description,
+                price,
                 id_company: id,
                 id_engineer,
                 done

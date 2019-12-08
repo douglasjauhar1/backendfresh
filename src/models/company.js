@@ -7,7 +7,7 @@ module.exports = {
     createCompany: (body) => {
         return new Promise ((resolve, reject) => {
             conn.query(`INSERT INTO ${TABLE_COMPANY} SET ?`, body, (err, result) => {
-                if(err) reject('err')
+                if(err) reject(err)
                 resolve(result)
             })
         })
@@ -16,10 +16,10 @@ module.exports = {
         return new Promise((resolve, reject) => {
             conn.query(`SELECT companies.*, project.project AS project,  project.done AS done
             FROM companies
-            INNER JOIN (SELECT projects.id_company,COUNT(projects.id_engineer) AS project, SUM(projects.done) AS done  
+            LEFT JOIN (SELECT projects.id_company,COUNT(projects.id_company) AS project, SUM(projects.done) AS done  
             FROM projects
-            GROUP BY projects.id_engineer) AS project ON project.id_engineer=companies.created_by`, (err, result) => {
-                if(err) reject('err')
+            GROUP BY projects.id_company) AS project ON project.id_company=companies.created_by`, (err, result) => {
+                if(err) reject(err)
                 resolve(result)
             })
         })
@@ -27,7 +27,7 @@ module.exports = {
     readCompanyby: (params) => {
         return new Promise((resolve, reject) => {
             conn.query(`SELECT * FROM ${TABLE_COMPANY} WHERE created_by = ?`, params, (err, result) => {
-                if(err) reject('err')
+                if(err) reject(err)
                 resolve(result)
             })
         })
@@ -35,7 +35,7 @@ module.exports = {
     updateCompany: (body, params) => {
         return new Promise((resolve, reject) => {
             conn.query(`UPDATE ${TABLE_COMPANY} SET ? WHERE created_by = ?`, [body, params], (err, result) => {
-                if(err) reject('err')
+                if(err) reject(err)
                 resolve(result)
             })
         })
@@ -43,7 +43,7 @@ module.exports = {
     deleteCompany: (params) => {
         return new Promise((resolve, reject) => {
             conn.query(`DELETE FROM ${TABLE_COMPANY} WHERE created_by = ?`, params, (err, result) => {
-                if(err) reject('err')
+                if(err) reject(err)
                 resolve(result)
             })
         })

@@ -6,7 +6,7 @@ module.exports = {
     createUser: (body) => {
         return new Promise ((resolve, reject) => {
             conn.query(`INSERT INTO ${TABLE_USERS} SET ?`, body, (err, result) => {
-                if(err) reject('the user was there')
+                if(err) reject(err)
                 resolve(result)
             })
         })

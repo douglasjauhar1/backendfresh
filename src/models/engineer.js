@@ -19,7 +19,7 @@ module.exports = {
             LEFT JOIN (SELECT projects.id_engineer,COUNT(projects.id_engineer) AS project, SUM(projects.done) AS done  
             FROM projects
             GROUP BY projects.id_engineer) AS project ON project.id_engineer=engineers.created_by`, (err, result) => {
-                if(err) reject('err')
+                if(err) reject(err)
                 resolve(result)
             })
         })
