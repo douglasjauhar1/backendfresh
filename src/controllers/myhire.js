@@ -32,11 +32,14 @@ module.exports = {
     },
     editUserData: async(req, res) => {
         const token = req.headers.authorization
+        let file = '';
+        try{ file = req.file.filename}
+        catch(error){ file = null}
         try{
             let data = JWT.verify(token, process.env.JWT_SECRET);
             let id = data.id;
             let category = data.category
-
+            
             if(category == 0) {
                 const {
                     name,
@@ -60,7 +63,7 @@ module.exports = {
                     skill,
                     showcase,
                     description,
-                    photo: req.file.filename,
+                    photo: file,
                     date_updated: new Date(),
                     created_by: id,
                     profession,
@@ -94,12 +97,12 @@ module.exports = {
                     location,
                     required_skill,
                     description,
-                    logo: req.file.filename,
+                    photo: file,
                     date_updated: new Date(),
                     created_by: id,
                 }
                 const result = await companyModel.readCompanyby(id)
-                path = 'Image/' + result[0].logo;
+                path = 'Image/' + result[0].photo;
                 fs.unlink(path, (err) => {
                     if (err) {
                       response(res, 400, {message: 'the image failed to upload'})
@@ -184,6 +187,9 @@ module.exports = {
     },
     createUserData: async(req, res) => {
         const token = req.headers.authorization
+        let file = '';
+        try{ file = req.file.filename}
+        catch(error){ file = null}
         try{
             let data = JWT.verify(token, process.env.JWT_SECRET);
             let id = data.id;
@@ -212,7 +218,7 @@ module.exports = {
                     skill,
                     showcase,
                     description,
-                    photo: req.file.filename,
+                    photo: file,
                     date_created: new Date(),
                     date_updated: new Date(),
                     created_by: id,
@@ -239,7 +245,7 @@ module.exports = {
                     location,
                     required_skill,
                     description,
-                    logo: req.file.filename,
+                    photo: file,
                     date_created: new Date(),
                     date_updated: new Date(),
                     created_by: id
@@ -275,6 +281,7 @@ module.exports = {
             if(req.body.category == 0){
                 regist = {
                     id: result.insertId,
+                    category: req.body.category,
                     token: token,
                     form: [
                         'name',
@@ -294,6 +301,7 @@ module.exports = {
                 regist = {
                     id: result.insertId,
                     token: token,
+                    category: req.body.category,
                     form: [
                         'name',
                         'email', 
@@ -301,7 +309,7 @@ module.exports = {
                         'location', 
                         'required_skill', 
                         'description',
-                        'logo',
+                        'photo',
                         'date_created',
                         'date_updated',
                         'created_by'
@@ -310,7 +318,7 @@ module.exports = {
             }
             response(res, 200, regist)   
         }catch(error) {
-            response(res, 500, error)
+            response(res, 406, {message: 'the username was there'})
         }
     },
     searchEngineerby: async(req, res) => {
@@ -321,11 +329,12 @@ module.exports = {
             const sort = req.query.sort;
             const limit = req.query.limit;
             const offset = req.query.offset;
+            console.log(skill);
 
             let data = JWT.verify(token, process.env.JWT_SECRET);
             let category = data.category
             //if(category == 1) {
-                const result = await engineerModel.searchEngineer(name, skill, sort, limit, offset);
+                const result = await engineerModel.searchEngineer(skill, sort, limit, offset);
                 console.log(result);
                 
                 response(res, 200, result)
@@ -387,12 +396,14 @@ module.exports = {
         try{
             let data = JWT.verify(token, process.env.JWT_SECRET);
             let idToken = data.id;
+            console.log(idToken);
             const {
                 id,
                 name,
                 skill,
                 description,
                 id_engineer,
+                price,
                 done
             } = req.body;
 
@@ -400,13 +411,117 @@ module.exports = {
                 name,
                 skill,
                 description,
-                id_company: id,
+                id_company: idToken,
                 id_engineer,
+                price,
                 done
             }
             let idProject = id;
-            const result = await projectModel.updateProject(dataProject, idToken, idProject)
-            response(res, 200, {message: "the data was changed"})
+            console.log(idProject);
+            
+            const result = await projectModel.updateCompanyProject(dataProject, idToken, idProject)
+            response(res, 200, {message: "the data was changed", result:result})
+        }catch(error){
+            console.log(error);
+            
+            response(res, 500, {message: "the server is error"})
+        }
+    },
+    changeProjectDone: async(req, res) => {
+        const token = req.headers.authorization
+        try{
+            let data = JWT.verify(token, process.env.JWT_SECRET);
+            let idToken = data.id;
+            let category = data.category;
+            if(category == '1'){
+                console.log(idToken);
+            
+                const {
+                    id,
+                    done
+                } = req.body;
+
+                let dataProject = {
+                    id_company: idToken,
+                    done
+                }
+                let idProject = id;
+                console.log(idProject);
+                
+                const result = await projectModel.updateCompanyProject(dataProject, idToken, idProject)
+                response(res, 200, {message: "the data was changed", result:result})
+            }else {
+                response(res, 406, {message: "you are not company user"})
+            }
+            
+        }catch(error){
+            console.log(error);
+            
+            response(res, 500, {message: "the server is error"})
+        }
+    },
+    changeProjectStatus: async(req, res) => {
+        const token = req.headers.authorization
+        try{
+            let data = JWT.verify(token, process.env.JWT_SECRET);
+            let idToken = data.id;
+            let category = data.category;
+            if(category == '0'){
+                console.log(idToken);
+            
+                const {
+                    id,
+                    status
+                } = req.body;
+
+                let dataProject = {
+                    //id_company: idToken,
+                    status
+                }
+                let idProject = id;
+                console.log(idProject);
+                
+                const result = await projectModel.updateEngineerProject(dataProject, idToken, idProject)
+                response(res, 200, {message: "the data was changed", result:result})
+            }else {
+                response(res, 406, {message: "you are not engineer user"})
+            }
+            
+        }catch(error){
+            console.log(error);
+            
+            response(res, 500, {message: "the server is error"})
+        }
+    },
+    changeDoProject: async(req, res) => {
+        const token = req.headers.authorization
+        try{
+            let data = JWT.verify(token, process.env.JWT_SECRET);
+            let idToken = data.id;
+            let category = data.category;
+            if(category == '1'){
+                console.log(idToken);
+            
+                const {
+                    id,
+                    name_engineer,
+                    id_engineer
+                } = req.body;
+
+                let dataProject = {
+                    id_company: idToken,
+                    name_engineer,
+                    id_engineer
+                }
+                
+                let idProject = id;
+                console.log(idProject);
+                const result = await projectModel.updateCompanyProject(dataProject, idToken, idProject)
+                response(res, 200, {message: "the data was changed", result:result})
+            }else {
+                response(res, 406, {message: "you are not company user"})
+            }
+            
         }catch(error){
             console.log(error);
             
@@ -434,8 +549,11 @@ module.exports = {
                 price,
                 id_company: id,
                 id_engineer,
-                done
+                done,
+              
             }
+            console.log(dataProject);
+            
             const result = await projectModel.createProject(dataProject);
             response(res, 200, {message: 'the project was created'})
         }catch(err){
@@ -468,7 +586,11 @@ module.exports = {
             let data = JWT.verify(token, process.env.JWT_SECRET);
             let id_company = data.id;
             let id_index = id;
+            console.log('id:'+id_index+' id_comp: '+id_company);
+            
             const result = await projectModel.deleteProject(id_company, id_index);
+            console.log(result);
+            
             response(res, 200, {message:'the project was deleted'});
         }catch(err){
             console.log(err);

@@ -14,7 +14,11 @@ const {
     readProject,
     changeProject,
     createProject,
-    deleteProject
+    deleteProject,
+    changeProjectDone,
+    changeProjectStatus,
+    changeDoProject
+
 } = require('../controllers/myhire')
 
 const {
@@ -22,6 +26,7 @@ const {
 } = require('../controllers/user')
 
 
+// require('../../././src') '/Users/Teguh Setiawan/Documents/pelatihan/tgl 21 11 19/Myhire/scr'
 var directories = path.dirname('./');
 
 const {
@@ -36,6 +41,9 @@ router
     .get('/by', tokenVerify,  readUserData)
     .put('/edit', tokenVerify, uploadFile, editUserData)
     .put('/changeproject', tokenVerify, changeProject)
+    .put('/doneproject', tokenVerify, changeProjectDone)
+    .put('/statusproject', tokenVerify, changeProjectStatus)
+    .put('/engineerproject', tokenVerify, changeDoProject)
     .post('/createproject', tokenVerify, createProject)
     .get('/readproject', tokenVerify, readProject)
     .delete('/deleteproject', tokenVerify, deleteProject)

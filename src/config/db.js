@@ -2,10 +2,10 @@ require('dotenv/config');
 const mysql = require('mysql');
 
 conn = mysql.createConnection({
-    host        : '127.0.0.1',
-    user        : 'admin',
-    password    : 'admin4321',
-    database    : 'myHire'
+    host        : process.env.DB_HOST,
+    user        : process.env.DB_USER,
+    password    : process.env.DB_PASS,
+    database    : process.env.DB_DATABASE
 });
 
 conn.connect((err) => {
@@ -16,3 +16,4 @@ conn.connect((err) => {
 });
 
 module.exports = conn;
+

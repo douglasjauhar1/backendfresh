@@ -21,9 +21,7 @@ module.exports = {
     },
     readEngineerby: async(req, res) => {
         try{
-            const id = req.params.id
-            console.log(id)
-            const result = await engineerModel.readEngineerby(id)
+            const result = await engineerModel.readEngineerby(req.params.id)
             res.send(result)
         }catch(error) {
           
